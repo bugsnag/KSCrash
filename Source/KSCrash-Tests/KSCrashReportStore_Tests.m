@@ -39,6 +39,7 @@
 @interface KSCrashReportStore (Tests)
 
 - (NSString*) reportIDFromFilename:(NSString*) filename;
+- (void) setBundleName:(NSString *) bundleName;
 
 @end
 
@@ -63,6 +64,61 @@
     NSFileManager* fm = [NSFileManager defaultManager];
     return [fm fileExistsAtPath:[self.tempPath stringByAppendingPathComponent:reportName]];
 }
+
+- (void) testReportIDFromValidCombinedPath
+{
+    KSCrashReportStore* store = [self store];
+
+    NSString *bundleName = @"ЙогуртЙод";
+    [store setBundleName:bundleName];
+
+    NSString* expectedReportID = @"EEEC2645-5413-48C8-85AD-89638E1BE968";
+    NSString* reportFilename = [NSString stringWithFormat:@"%@-CrashReport-%@.json", bundleName, expectedReportID];
+    NSString* reportID = [store reportIDFromFilename:reportFilename];
+    XCTAssertNotNil(reportID, @"");
+    XCTAssertEqualObjects(reportID, expectedReportID, @"");
+}
+
+- (void) testReportIDFromFileWithInvalidExtension
+{
+    KSCrashReportStore* store = [self store];
+
+    NSString* reportFilename = @"BundleID-CrashReport-REPORTID.xml";
+    NSString* reportID = [store reportIDFromFilename:reportFilename];
+    XCTAssertNil(reportID, @"");
+}
+
+- (void) testReportIDFromFileWithExtensionInBundleID
+{
+    KSCrashReportStore* store = [self store];
+
+    NSString *bundleName = @"MyApp.json";
+    [store setBundleName:bundleName];
+
+    NSString* expectedReportID = @"EEEC2645-5413-48C8-85AD-89638E1BE968";
+    NSString* reportFilename = [NSString stringWithFormat:@"%@-CrashReport-%@.json", bundleName, expectedReportID];
+    NSString* reportID = [store reportIDFromFilename:reportFilename];
+    XCTAssertNotNil(reportID, @"");
+    XCTAssertEqualObjects(reportID, expectedReportID, @"");
+}
+
+- (void) testAddAndRetrieveCustomReport
+{
+    KSCrashReportStore* store = [self store];
+    NSDictionary* report = @{@"A": @"1", @"B": @"2"};
+
+    NSString* reportID = [store addCustomReport:report];
+    XCTAssertNotNil(reportID, @"");
+
+    NSDictionary* fetchedReport = [store reportWithID:reportID];
+    NSDictionary* reportSection = fetchedReport[@"report"];
+    XCTAssertNotNil(reportSection, @"Retrieved report is missing report section");
+    
+    NSMutableDictionary* mutableReport = [fetchedReport mutableCopy];
+    mutableReport[@"report"] = nil;
+    XCTAssertEqualObjects(mutableReport, report, @"");
+}
+
 /* TODO
 - (void) testReportNames
 {

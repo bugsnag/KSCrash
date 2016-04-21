@@ -28,7 +28,6 @@
 #import <XCTest/XCTest.h>
 
 #import "KSJSONCodecObjC.h"
-#import "ARCSafe_MemMgmt.h"
 
 
 @interface KSJSONCodec_Tests : XCTestCase @end
@@ -51,7 +50,7 @@ static NSString* toString(NSData* data)
     {
         return nil;
     }
-    return as_autorelease([[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+    return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
 - (void)testSerializeDeserializeArrayEmpty
@@ -1090,7 +1089,7 @@ static NSString* toString(NSData* data)
     [jsonString deleteCharactersInRange:NSMakeRange([jsonString length]-1, 1)];
     [jsonString appendString:@"]"];
 
-    id deserialized = [KSJSONCodec decode:toData(jsonString) options:0 error:&error];
+    NSArray* deserialized = [KSJSONCodec decode:toData(jsonString) options:0 error:&error];
     unsigned int deserializedCount = (unsigned int)[deserialized count];
     XCTAssertNotNil(deserialized, @"");
     XCTAssertNil(error, @"");
@@ -1121,7 +1120,7 @@ static NSString* toString(NSData* data)
     [jsonString deleteCharactersInRange:NSMakeRange([jsonString length]-1, 1)];
     [jsonString appendString:@"}"];
 
-    id deserialized = [KSJSONCodec decode:toData(jsonString) options:0 error:&error];
+    NSDictionary* deserialized = [KSJSONCodec decode:toData(jsonString) options:0 error:&error];
     unsigned int deserializedCount = (unsigned int)[deserialized count];
     XCTAssertNotNil(deserialized, @"");
     XCTAssertNil(error, @"");

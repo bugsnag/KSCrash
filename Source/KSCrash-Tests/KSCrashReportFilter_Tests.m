@@ -27,7 +27,6 @@
 
 #import <XCTest/XCTest.h>
 
-#import "ARCSafe_MemMgmt.h"
 #import "KSCrashCallCompletion.h"
 #import "KSCrashReportFilter.h"
 #import "KSCrashReportFilterBasic.h"
@@ -45,7 +44,7 @@
 
 + (KSCrash_TestNilFilter*) filter
 {
-    return as_autorelease([[self alloc] init]);
+    return [[self alloc] init];
 }
 
 - (void) filterReports:(__unused NSArray*) reports onCompletion:(KSCrashReportFilterCompletion) onCompletion
@@ -80,7 +79,7 @@
                               completed:(BOOL) completed
                                   error:(NSError*) error
 {
-    return as_autorelease([[self alloc] initWithDelay:delay completed:completed error:error]);
+    return [[self alloc] initWithDelay:delay completed:completed error:error];
 }
 
 - (id) initWithDelay:(NSTimeInterval) delay
@@ -94,15 +93,6 @@
         self.error = error;
     }
     return self;
-}
-
-- (void) dealloc
-{
-    as_release(_error);
-    as_release(_reports);
-    as_release(_timer);
-    as_release(_onCompletion);
-    as_superdealloc();
 }
 
 - (void) filterReports:(NSArray*) reports
@@ -179,7 +169,7 @@
                                       [KSCrashReportFilterPassthrough filter],
                                       [KSCrashReportFilterPassthrough filter],
                                       nil];
-    filter = as_autorelease(filter);
+    filter = filter;
     
     [filter filterReports:expected onCompletion:^(NSArray* filteredReports,
                                                   BOOL completed,
@@ -314,9 +304,9 @@
 {
     NSArray* source = [NSArray arrayWithObjects:@"1", @"2", @"3", nil];
     NSArray* expected = [NSArray arrayWithObjects:
-                         [@"1" dataUsingEncoding:NSUTF8StringEncoding],
-                         [@"2" dataUsingEncoding:NSUTF8StringEncoding],
-                         [@"3" dataUsingEncoding:NSUTF8StringEncoding],
+                         (id _Nonnull)[@"1" dataUsingEncoding:NSUTF8StringEncoding],
+                         (id _Nonnull)[@"2" dataUsingEncoding:NSUTF8StringEncoding],
+                         (id _Nonnull)[@"3" dataUsingEncoding:NSUTF8StringEncoding],
                          nil];
     id<KSCrashReportFilter> filter = [KSCrashReportFilterStringToData filter];
 
@@ -333,9 +323,9 @@
 - (void) testFilterDataToString
 {
     NSArray* source = [NSArray arrayWithObjects:
-                       [@"1" dataUsingEncoding:NSUTF8StringEncoding],
-                       [@"2" dataUsingEncoding:NSUTF8StringEncoding],
-                       [@"3" dataUsingEncoding:NSUTF8StringEncoding],
+                       (id _Nonnull)[@"1" dataUsingEncoding:NSUTF8StringEncoding],
+                       (id _Nonnull)[@"2" dataUsingEncoding:NSUTF8StringEncoding],
+                       (id _Nonnull)[@"3" dataUsingEncoding:NSUTF8StringEncoding],
                        nil];
     NSArray* expected = [NSArray arrayWithObjects:@"1", @"2", @"3", nil];
     id<KSCrashReportFilter> filter = [KSCrashReportFilterDataToString filter];
@@ -372,9 +362,9 @@
 {
     NSArray* expected1 = [NSArray arrayWithObjects:@"1", @"2", @"3", nil];
     NSArray* expected2 = [NSArray arrayWithObjects:
-                          [@"1" dataUsingEncoding:NSUTF8StringEncoding],
-                          [@"2" dataUsingEncoding:NSUTF8StringEncoding],
-                          [@"3" dataUsingEncoding:NSUTF8StringEncoding],
+                          (id _Nonnull)[@"1" dataUsingEncoding:NSUTF8StringEncoding],
+                          (id _Nonnull)[@"2" dataUsingEncoding:NSUTF8StringEncoding],
+                          (id _Nonnull)[@"3" dataUsingEncoding:NSUTF8StringEncoding],
                           nil];
     id<KSCrashReportFilter> filter = [KSCrashReportFilterCombine filterWithFiltersAndKeys:
                                       [KSCrashReportFilterPassthrough filter],
@@ -406,9 +396,9 @@
 {
     NSArray* expected1 = [NSArray arrayWithObjects:@"1", @"2", @"3", nil];
     NSArray* expected2 = [NSArray arrayWithObjects:
-                          [@"1" dataUsingEncoding:NSUTF8StringEncoding],
-                          [@"2" dataUsingEncoding:NSUTF8StringEncoding],
-                          [@"3" dataUsingEncoding:NSUTF8StringEncoding],
+                          (id _Nonnull)[@"1" dataUsingEncoding:NSUTF8StringEncoding],
+                          (id _Nonnull)[@"2" dataUsingEncoding:NSUTF8StringEncoding],
+                          (id _Nonnull)[@"3" dataUsingEncoding:NSUTF8StringEncoding],
                           nil];
     id<KSCrashReportFilter> filter = [[KSCrashReportFilterCombine alloc] initWithFiltersAndKeys:
                                       [KSCrashReportFilterPassthrough filter],
@@ -416,7 +406,7 @@
                                       [KSCrashReportFilterStringToData filter],
                                       @"data",
                                       nil];
-    filter = as_autorelease(filter);
+    filter = filter;
     
     [filter filterReports:expected1 onCompletion:^(NSArray* filteredReports,
                                                    BOOL completed,
@@ -498,9 +488,9 @@
 {
     NSArray* expected1 = [NSArray arrayWithObjects:@"1", @"2", @"3", nil];
     NSArray* expected2 = [NSArray arrayWithObjects:
-                          [@"1" dataUsingEncoding:NSUTF8StringEncoding],
-                          [@"2" dataUsingEncoding:NSUTF8StringEncoding],
-                          [@"3" dataUsingEncoding:NSUTF8StringEncoding],
+                          (id _Nonnull)[@"1" dataUsingEncoding:NSUTF8StringEncoding],
+                          (id _Nonnull)[@"2" dataUsingEncoding:NSUTF8StringEncoding],
+                          (id _Nonnull)[@"3" dataUsingEncoding:NSUTF8StringEncoding],
                           nil];
     id<KSCrashReportFilter> filter = [KSCrashReportFilterCombine filterWithFiltersAndKeys:
                                       [NSArray arrayWithObject:[KSCrashReportFilterPassthrough filter]],
@@ -603,7 +593,8 @@
      {
          XCTAssertTrue(completed, @"");
          XCTAssertNil(error, @"");
-         XCTAssertTrue([[filteredReports objectAtIndex:0] count] == 0, @"");
+         NSDictionary* firstReport = filteredReports[0];
+         XCTAssertTrue(firstReport.count == 0, @"");
      }];
 }
 
@@ -659,7 +650,7 @@
     NSString* expected = @"1,a";
     id<KSCrashReportFilter> filter = [[KSCrashReportFilterConcatenate alloc] initWithSeparatorFmt:@","
                                                                                              keys:@"first", @"second", nil];
-    filter = as_autorelease(filter);
+    filter = filter;
     
     [filter filterReports:reports onCompletion:^(NSArray* filteredReports,
                                                  BOOL completed,
@@ -730,7 +721,7 @@
                               @"b", @"third",
                               nil];
     id<KSCrashReportFilter> filter = [[KSCrashReportFilterSubset alloc] initWithKeys:@"first", @"third", nil];
-    filter = as_autorelease(filter);
+    filter = filter;
     
     [filter filterReports:reports onCompletion:^(NSArray* filteredReports,
                                                  BOOL completed,

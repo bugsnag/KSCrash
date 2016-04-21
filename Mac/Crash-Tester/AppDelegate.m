@@ -7,7 +7,6 @@
 //
 
 #import "AppDelegate.h"
-#import "ARCSafe_MemMgmt.h"
 #import "Crasher.h"
 #import "CrashTesterCommands.h"
 #import "Configuration.h"
@@ -90,7 +89,7 @@ static void onCrash(const KSCrashReportWriter* writer)
 - (void)applicationDidFinishLaunching:(__unused NSNotification *)aNotification
 {
     [self installCrashHandler];
-    self.crasher = as_autorelease([[Crasher alloc] init]);
+    self.crasher = [[Crasher alloc] init];
     [self updateReportCount];
 }
 

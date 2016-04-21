@@ -27,8 +27,8 @@
 
 #import "KSHTTPMultipartPostBody.h"
 
-#import "ARCSafe_MemMgmt.h"
 #import "NSMutableData+AppendUTF8.h"
+#import "NSString+URLEncode.h"
 
 
 /**
@@ -73,10 +73,10 @@
               contentType:(NSString*) contentType
                  filename:(NSString*) filename
 {
-    return as_autorelease([[self alloc] initWithData:data
-                                                name:name
-                                         contentType:contentType
-                                            filename:filename]);
+    return [[self alloc] initWithData:data
+                                 name:name
+                          contentType:contentType
+                             filename:filename];
 }
 
 - (id) initWithData:(NSData*) data
@@ -89,21 +89,12 @@
 
     if((self = [super init]))
     {
-        _data = as_retain(data);
-        _name = as_retain(name);
-        _contentType = as_retain(contentType);
-        _filename = as_retain(filename);
+        _data = data;
+        _name = name;
+        _contentType = contentType;
+        _filename = filename;
     }
     return self;
-}
-
-- (void) dealloc
-{
-    as_release(_data);
-    as_release(_name);
-    as_release(_contentType);
-    as_release(_filename);
-    as_superdealloc();
 }
 
 @end
@@ -125,7 +116,7 @@ static NSString* g_boundary = @"uyw$gHGJ[fsR}tt932_shGwqdbanbvVMJje%Y2ewy78";
 
 + (KSHTTPMultipartPostBody*) body
 {
-    return as_autorelease([[self alloc] init]);
+    return [[self alloc] init];
 }
 
 - (id) init
@@ -136,13 +127,6 @@ static NSString* g_boundary = @"uyw$gHGJ[fsR}tt932_shGwqdbanbvVMJje%Y2ewy78";
         _contentType = [[NSString alloc] initWithFormat:@"multipart/form-data; boundary=%@", g_boundary];
     }
     return self;
-}
-
-- (void) dealloc
-{
-    as_release(_fields);
-    as_release(_contentType);
-    as_superdealloc();
 }
 
 - (void) appendData:(NSData*) data
@@ -183,13 +167,13 @@ static NSString* g_boundary = @"uyw$gHGJ[fsR}tt932_shGwqdbanbvVMJje%Y2ewy78";
         if(field.filename != nil)
         {
             [data appendUTF8Format:@"Content-Disposition: form-data; name=\"%@\"; filename=\"%@\"\r\n",
-             [field.name stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
-             [field.filename stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+             [field.name URLEncoded],
+             [field.filename URLEncoded]];
         }
         else
         {
             [data appendUTF8Format:@"Content-Disposition: form-data; name=\"%@\"\r\n",
-             [field.name stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+             [field.name URLEncoded]];
         }
         if(field.contentType != nil)
         {
