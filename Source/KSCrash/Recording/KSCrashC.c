@@ -279,6 +279,11 @@ void kscrash_setSuspendThreadsForUserReported(bool suspendThreadsForUserReported
     crashContext()->crash.suspendThreadsForUserReported = suspendThreadsForUserReported;
 }
 
+void kscrash_setReportWhenDebuggerIsAttached(bool reportWhenDebuggerIsAttached)
+{
+    crashContext()->crash.reportWhenDebuggerIsAttached = reportWhenDebuggerIsAttached;
+}
+
 void kscrash_setCrashNotifyCallback(const KSReportWriteCallback onCrashNotify)
 {
     KSLOG_TRACE("Set onCrashNotify to %p", onCrashNotify);

@@ -107,6 +107,7 @@
 @synthesize introspectMemory = _introspectMemory;
 @synthesize doNotIntrospectClasses = _doNotIntrospectClasses;
 @synthesize suspendThreadsForUserReported = _suspendThreadsForUserReported;
+@synthesize reportWhenDebuggerIsAttached = _reportWhenDebuggerIsAttached;
 @synthesize maxStoredReports = _maxStoredReports;
 
 
@@ -155,6 +156,7 @@ IMPLEMENT_EXCLUSIVE_SHARED_INSTANCE(KSCrash)
         self.searchQueueNames = NO;
         self.introspectMemory = YES;
         self.suspendThreadsForUserReported = YES;
+        self.reportWhenDebuggerIsAttached = NO;
         self.maxStoredReports = 5;
     }
     return self;
@@ -260,6 +262,12 @@ failed:
 {
     _suspendThreadsForUserReported = suspendThreadsForUserReported;
     kscrash_setSuspendThreadsForUserReported(suspendThreadsForUserReported);
+}
+
+- (void) setReportWhenDebuggerIsAttached:(bool)reportWhenDebuggerIsAttached
+{
+    _reportWhenDebuggerIsAttached = reportWhenDebuggerIsAttached;
+    kscrash_setReportWhenDebuggerIsAttached(reportWhenDebuggerIsAttached);
 }
 
 - (NSString*) crashReportPath

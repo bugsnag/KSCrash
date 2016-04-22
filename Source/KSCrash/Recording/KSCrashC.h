@@ -174,6 +174,12 @@ void kscrash_setDoNotIntrospectClasses(const char** doNotIntrospectClasses, size
  */
 void kscrash_setSuspendThreadsForUserReported(bool suspendThreadsForUserReported);
     
+/** If YES, user reported exceptions even if a debugger is attached
+ *
+ * Default: NO
+ */
+void kscrash_setReportWhenDebuggerIsAttached(bool reportWhenDebuggerIsAttached);
+    
 /** Set the callback to invoke upon a crash.
  *
  * WARNING: Only call async-safe functions from this function! DO NOT call

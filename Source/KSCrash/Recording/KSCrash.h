@@ -152,6 +152,12 @@ typedef enum
  */
 @property(nonatomic,readwrite,assign) bool suspendThreadsForUserReported;
 
+/** If YES, reports will be sent even if a debugger is attached
+ *
+ * Default: NO
+ */
+@property(nonatomic,readwrite,assign) bool reportWhenDebuggerIsAttached;
+
 /** Get the singleton instance of the crash reporter.
  */
 + (KSCrash*) sharedInstance;

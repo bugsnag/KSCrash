@@ -108,8 +108,16 @@ KSCrashType kscrashsentry_installWithContext(KSCrash_SentryContext* context,
 {
     if(ksmach_isBeingTraced())
     {
-        KSLOGBASIC_WARN("KSCrash: App is running in a debugger. Crash handling is disabled.");
-        crashTypes = KSCrashTypeNone;
+        if (context->reportWhenDebuggerIsAttached)
+        {
+            KSLOGBASIC_WARN("KSCrash: App is running in a debugger. Crash handling is enabled via configuration.");
+            KSLOG_DEBUG("Installing handlers with context %p, crash types 0x%x.", context, crashTypes);
+        }
+        else
+        {
+            KSLOGBASIC_WARN("KSCrash: App is running in a debugger. Crash handling is disabled.");
+            crashTypes = KSCrashTypeNone;
+        }
     }
     else
     {
