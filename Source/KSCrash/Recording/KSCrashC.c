@@ -204,15 +204,6 @@ void kscrash_setUserInfoJSON(const char* const userInfoJSON)
     ksstring_replace(&context->config.userInfoJSON, userInfoJSON);
 }
 
-void kscrash_setZombieCacheSize(size_t zombieCacheSize)
-{
-    kszombie_uninstall();
-    if(zombieCacheSize > 0)
-    {
-        kszombie_install(zombieCacheSize);
-    }
-}
-
 void kscrash_setDeadlockWatchdogInterval(double deadlockWatchdogInterval)
 {
     kscrashsentry_setDeadlockHandlerWatchdogInterval(deadlockWatchdogInterval);
@@ -236,6 +227,11 @@ void kscrash_setSearchQueueNames(bool shouldSearchQueueNames)
 void kscrash_setIntrospectMemory(bool introspectMemory)
 {
     crashContext()->config.introspectionRules.enabled = introspectMemory;
+}
+
+void kscrash_setCatchZombies(bool catchZombies)
+{
+    kszombie_setEnabled(catchZombies);
 }
 
 void kscrash_setDoNotIntrospectClasses(const char** doNotIntrospectClasses, size_t length)
@@ -294,8 +290,7 @@ void kscrash_reportUserException(const char* name,
                                  const char* reason,
                                  const char* language,
                                  const char* lineOfCode,
-                                 const char** stackTrace,
-                                 size_t stackTraceCount,
+                                 const char* stackTrace,
                                  bool terminateProgram)
 {
     kscrashsentry_reportUserException(name,
@@ -303,6 +298,5 @@ void kscrash_reportUserException(const char* name,
                                       language,
                                       lineOfCode,
                                       stackTrace,
-                                      stackTraceCount,
                                       terminateProgram);
 }

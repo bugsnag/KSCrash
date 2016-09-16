@@ -48,8 +48,8 @@
 // ============================================================================
 
 /** The directory under "Caches" to store the crash reports. */
-#ifndef KSCRASH_ReportFilesDirectory
-    #define KSCRASH_ReportFilesDirectory @"KSCrashReports"
+#ifndef KSCRASH_DefaultReportFilesDirectory
+    #define KSCRASH_DefaultReportFilesDirectory @"KSCrashReports"
 #endif
 
 
@@ -94,7 +94,6 @@
 @synthesize userInfo = _userInfo;
 @synthesize deleteBehaviorAfterSendAll = _deleteBehaviorAfterSendAll;
 @synthesize handlingCrashTypes = _handlingCrashTypes;
-@synthesize zombieCacheSize = _zombieCacheSize;
 @synthesize deadlockWatchdogInterval = _deadlockWatchdogInterval;
 @synthesize printTraceToStdout = _printTraceToStdout;
 @synthesize onCrash = _onCrash;
@@ -105,6 +104,7 @@
 @synthesize searchThreadNames = _searchThreadNames;
 @synthesize searchQueueNames = _searchQueueNames;
 @synthesize introspectMemory = _introspectMemory;
+@synthesize catchZombies = _catchZombies;
 @synthesize doNotIntrospectClasses = _doNotIntrospectClasses;
 @synthesize suspendThreadsForUserReported = _suspendThreadsForUserReported;
 @synthesize reportWhenDebuggerIsAttached = _reportWhenDebuggerIsAttached;
@@ -118,6 +118,11 @@
 IMPLEMENT_EXCLUSIVE_SHARED_INSTANCE(KSCrash)
 
 - (id) init
+{
+    return [self initWithReportFilesDirectory:KSCRASH_DefaultReportFilesDirectory];
+}
+
+- (id) initWithReportFilesDirectory:(NSString *)reportFilesDirectory
 {
     if((self = [super init]))
     {
@@ -137,7 +142,7 @@ IMPLEMENT_EXCLUSIVE_SHARED_INSTANCE(KSCrash)
             KSLOG_ERROR(@"Could not locate cache directory path.");
             goto failed;
         }
-        NSString* storePathEnd = [KSCRASH_ReportFilesDirectory stringByAppendingPathComponent:self.bundleName];
+        NSString* storePathEnd = [reportFilesDirectory stringByAppendingPathComponent:self.bundleName];
         NSString* storePath = [cachePath stringByAppendingPathComponent:storePathEnd];
         if([storePath length] == 0)
         {
@@ -157,6 +162,7 @@ IMPLEMENT_EXCLUSIVE_SHARED_INSTANCE(KSCrash)
         self.introspectMemory = YES;
         self.suspendThreadsForUserReported = YES;
         self.reportWhenDebuggerIsAttached = NO;
+        self.catchZombies = NO;
         self.maxStoredReports = 5;
     }
     return self;
@@ -196,12 +202,6 @@ failed:
     _handlingCrashTypes = kscrash_setHandlingCrashTypes(handlingCrashTypes);
 }
 
-- (void) setZombieCacheSize:(size_t) zombieCacheSize
-{
-    _zombieCacheSize = zombieCacheSize;
-    kscrash_setZombieCacheSize(zombieCacheSize);
-}
-
 - (void) setDeadlockWatchdogInterval:(double) deadlockWatchdogInterval
 {
     _deadlockWatchdogInterval = deadlockWatchdogInterval;
@@ -236,6 +236,12 @@ failed:
 {
     _introspectMemory = introspectMemory;
     kscrash_setIntrospectMemory(introspectMemory);
+}
+
+- (void) setCatchZombies:(bool)catchZombies
+{
+    _catchZombies = catchZombies;
+    kscrash_setCatchZombies(catchZombies);
 }
 
 - (void) setDoNotIntrospectClasses:(NSArray *)doNotIntrospectClasses
@@ -365,20 +371,21 @@ failed:
     const char* cReason = [reason cStringUsingEncoding:NSUTF8StringEncoding];
     const char* cLanguage = [language cStringUsingEncoding:NSUTF8StringEncoding];
     const char* cLineOfCode = [lineOfCode cStringUsingEncoding:NSUTF8StringEncoding];
-    size_t cStackTraceCount = [stackTrace count];
-    const char** cStackTrace = malloc(sizeof(*cStackTrace) * cStackTraceCount);
-
-    for(size_t i = 0; i < cStackTraceCount; i++)
+    NSError* error = nil;
+    NSData* jsonData = [KSJSONCodec encode:stackTrace options:0 error:&error];
+    if(jsonData == nil || error != nil)
     {
-        cStackTrace[i] = [[stackTrace objectAtIndex:i] cStringUsingEncoding:NSUTF8StringEncoding];
+        KSLOG_ERROR(@"Error encoding stack trace to JSON: %@", error);
+        // Don't return, since we can still record other useful information.
     }
+    NSString* jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    const char* cStackTrace = [jsonString cStringUsingEncoding:NSUTF8StringEncoding];
 
     kscrash_reportUserException(cName,
                                 cReason,
                                 cLanguage,
                                 cLineOfCode,
                                 cStackTrace,
-                                cStackTraceCount,
                                 terminateProgram);
 
     // If kscrash_reportUserException() returns, we did not terminate.
@@ -390,8 +397,6 @@ failed:
                       [self.recrashReportPath UTF8String],
                       [self.stateFilePath UTF8String],
                       [self.nextCrashID UTF8String]);
-
-    free((void*)cStackTrace);
 }
 
 // ============================================================================
@@ -544,7 +549,7 @@ SYNTHESIZE_CRASH_STATE_PROPERTY(BOOL, crashedLastLaunch)
 
 
 //! Project version number for KSCrashFramework.
-double KSCrashFrameworkVersionNumber = 1.03;
+const double KSCrashFrameworkVersionNumber = 1.80;
 
 //! Project version string for KSCrashFramework.
-const unsigned char KSCrashFrameworkVersionString[] = "1.0.3";
+const unsigned char KSCrashFrameworkVersionString[] = "1.8.0";

@@ -5,6 +5,7 @@
 
 #import "AppDelegate.h"
 
+#import <KSCrash/KSCrashInstallation+Alert.h>
 #import <KSCrash/KSCrashInstallationStandard.h>
 #import <KSCrash/KSCrashInstallationQuincyHockey.h>
 #import <KSCrash/KSCrashInstallationEmail.h>
@@ -160,7 +161,6 @@ static void advanced_crash_callback(const KSCrashReportWriter* writer)
     KSCrash* handler = [KSCrash sharedInstance];
     
     // Settings in KSCrash.h
-    handler.zombieCacheSize = 16384;
     handler.deadlockWatchdogInterval = 8;
     handler.userInfo = @{@"someKey": @"someValue"};
     handler.onCrash = advanced_crash_callback;
