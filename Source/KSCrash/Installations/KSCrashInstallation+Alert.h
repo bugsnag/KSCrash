@@ -1,7 +1,5 @@
 //
-//  KSSafeCollections.h
-//
-//  Created by Karl Stenerud on 2012-08-21.
+//  KSCrashInstallation+Alert.h
 //
 //  Copyright (c) 2012 Karl Stenerud. All rights reserved.
 //
@@ -24,31 +22,32 @@
 // THE SOFTWARE.
 //
 
+#import "KSCrashInstallation.h"
 
-#import <Foundation/Foundation.h>
+@interface KSCrashInstallation (Alert)
 
+/** Show an alert before sending any reports. Reports will only be sent if the user
+ * presses the "yes" button.
+ *
+ * @param title The alert title.
+ * @param message The message to show the user.
+ * @param yesAnswer The text to display in the "yes" box.
+ * @param noAnswer The text to display in the "no" box.
+ */
+- (void) addConditionalAlertWithTitle:(NSString*) title
+                              message:(NSString*) message
+                            yesAnswer:(NSString*) yesAnswer
+                             noAnswer:(NSString*) noAnswer;
 
-@interface NSMutableArray (KSSafeCollections)
-
-- (void) ksc_addObjectIfNotNil:(id) object;
-
-- (void) ksc_safeAddObject:(id) object;
-
-- (void) ksc_insertObjectIfNotNil:(id) object atIndex:(NSUInteger) index;
-
-- (void) ksc_safeInsertObject:(id) object atIndex:(NSUInteger) index;
-
-@end
-
-
-@interface NSMutableDictionary (KSSafeCollections)
-
-- (void) ksc_setObjectIfNotNil:(id) object forKey:(id) key;
-
-- (void) ksc_safeSetObject:(id) object forKey:(id) key;
-
-- (void) ksc_setValueIfNotNil:(id) value forKey:(NSString*) key;
-
-- (void) ksc_safeSetValue:(id) value forKey:(NSString*) key;
+/** Show an alert before sending any reports. Reports will be unconditionally sent
+ * when the alert is dismissed.
+ *
+ * @param title The alert title.
+ * @param message The message to show the user.
+ * @param dismissButtonText The text to display in the dismiss button.
+ */
+- (void) addUnconditionalAlertWithTitle:(NSString*) title
+                                message:(NSString*) message
+                      dismissButtonText:(NSString*) dismissButtonText;
 
 @end

@@ -98,21 +98,6 @@ void kscrash_reinstall(const char* const crashReportFilePath,
  */
 void kscrash_setUserInfoJSON(const char* const userInfoJSON);
 
-/** Set the size of the cache to use for on-device zombie tracking.
- * Every deallocated object will be hashed based on its address modulus the cache
- * size, so the bigger the cache, the less likely a hash collision (missed zombie).
- * It is best to profile your app to determine how many objects are allocated at
- * a time before choosing this value, but in general you'll want a value of
- * at least 16384.
- * Each cache entry will occupy 8 bytes for 32-bit architectures and 16 bytes
- * for 64-bit architectures.
- *
- * Note: Value must be a power-of-2. 0 = no zombie checking.
- *
- * Default: 0
- */
-void kscrash_setZombieCacheSize(size_t zombieCacheSize);
-
 /** Set the maximum time to allow the main thread to run without returning.
  * If a task occupies the main thread for longer than this interval, the
  * watchdog will consider the queue deadlocked and shut down the app and write a
@@ -148,7 +133,7 @@ void kscrash_setSearchThreadNames(bool shouldSearchThreadNames);
 */
 void kscrash_setSearchQueueNames(bool shouldSearchQueueNames);
 
-/** If YES, introspect memory contents during a crash.
+/** If true, introspect memory contents during a crash.
  * Any Objective-C objects or C strings near the stack pointer or referenced by
  * cpu registers or exceptions will be recorded in the crash report, along with
  * their contents.
@@ -156,6 +141,13 @@ void kscrash_setSearchQueueNames(bool shouldSearchQueueNames);
  * Default: false
  */
 void kscrash_setIntrospectMemory(bool introspectMemory);
+
+/** If true, monitor all Objective-C/Swift deallocations and keep track of any
+ * accesses after deallocation.
+ *
+ * Default: false
+ */
+void kscrash_setCatchZombies(bool catchZombies);
 
 /** List of Objective-C classes that should never be introspected.
  * Whenever a class in this list is encountered, only the class name will be recorded.
@@ -207,9 +199,8 @@ void kscrash_setCrashNotifyCallback(const KSReportWriteCallback onCrashNotify);
  *
  * @param lineOfCode A copy of the offending line of code (NULL = ignore).
  *
- * @param stackTrace An array of strings representing the call stack leading to the exception.
- *
- * @param stackTraceCount The length of the stack trace array (0 = ignore).
+ * @param stackTrace JSON encoded array containing stack trace information (one frame per array entry).
+ *                   The frame structure can be anything you want, including bare strings.
  *
  * @param terminateProgram If true, do not return from this function call. Terminate the program instead.
  */
@@ -217,8 +208,7 @@ void kscrash_reportUserException(const char* name,
                                  const char* reason,
                                  const char* language,
                                  const char* lineOfCode,
-                                 const char** stackTrace,
-                                 size_t stackTraceCount,
+                                 const char* stackTrace,
                                  bool terminateProgram);
 
 #ifdef __cplusplus

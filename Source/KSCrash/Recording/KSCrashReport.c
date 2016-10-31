@@ -499,7 +499,9 @@ uintptr_t* kscrw_i_getBacktrace(const KSCrash_SentryContext* const crash,
 {
     if(thread == crash->offendingThread)
     {
-        if(crash->crashType & (KSCrashTypeCPPException | KSCrashTypeNSException | KSCrashTypeUserReported))
+        if(crash->stackTrace != NULL &&
+           crash->stackTraceLength > 0 &&
+           (crash->crashType & (KSCrashTypeCPPException | KSCrashTypeNSException | KSCrashTypeUserReported)))
         {
             *backtraceLength = crash->stackTraceLength;
             return crash->stackTrace;
@@ -868,7 +870,7 @@ void kscrw_i_writeUnknownObjectContents(const KSCrashReportWriter* const writer,
     {
         if(ksobjc_isTaggedPointer(object))
         {
-            writer->addIntegerElement(writer, "tagged_payload", ksobjc_taggedPointerPayload(object));
+            writer->addIntegerElement(writer, "tagged_payload", (long long)ksobjc_taggedPointerPayload(object));
         }
         else
         {
@@ -1909,16 +1911,9 @@ void kscrw_i_writeError(const KSCrashReportWriter* const writer,
                     {
                         writer->addStringElement(writer, KSCrashField_LineOfCode, crash->userException.lineOfCode);
                     }
-                    if(crash->userException.customStackTraceLength > 0)
+                    if(crash->userException.customStackTrace != NULL)
                     {
-                        writer->beginArray(writer, KSCrashField_Backtrace);
-                        {
-                            for(int i = 0; i < crash->userException.customStackTraceLength; i++)
-                            {
-                                writer->addStringElement(writer, NULL, crash->userException.customStackTrace[i]);
-                            }
-                        }
-                        writer->endContainer(writer);
+                        writer->addJSONElement(writer, KSCrashField_Backtrace, crash->userException.customStackTrace);
                     }
                 }
                 writer->endContainer(writer);

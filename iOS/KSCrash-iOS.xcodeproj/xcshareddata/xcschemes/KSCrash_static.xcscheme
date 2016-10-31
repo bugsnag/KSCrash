@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "CBF3CDDC17F574B5001AC307"
-               BuildableName = "Advanced-Example.app"
-               BlueprintName = "Advanced-Example"
-               ReferencedContainer = "container:Example-Apps-iOS.xcodeproj">
+               BlueprintIdentifier = "EDF2BE781CCF15AD004BADF4"
+               BuildableName = "KSCrash.framework"
+               BlueprintName = "KSCrash_static"
+               ReferencedContainer = "container:KSCrash-iOS.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -29,15 +29,6 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
       </Testables>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "CBF3CDDC17F574B5001AC307"
-            BuildableName = "Advanced-Example.app"
-            BlueprintName = "Advanced-Example"
-            ReferencedContainer = "container:Example-Apps-iOS.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -51,16 +42,15 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "CBF3CDDC17F574B5001AC307"
-            BuildableName = "Advanced-Example.app"
-            BlueprintName = "Advanced-Example"
-            ReferencedContainer = "container:Example-Apps-iOS.xcodeproj">
+            BlueprintIdentifier = "EDF2BE781CCF15AD004BADF4"
+            BuildableName = "KSCrash.framework"
+            BlueprintName = "KSCrash_static"
+            ReferencedContainer = "container:KSCrash-iOS.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -70,16 +60,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "CBF3CDDC17F574B5001AC307"
-            BuildableName = "Advanced-Example.app"
-            BlueprintName = "Advanced-Example"
-            ReferencedContainer = "container:Example-Apps-iOS.xcodeproj">
+            BlueprintIdentifier = "EDF2BE781CCF15AD004BADF4"
+            BuildableName = "KSCrash.framework"
+            BlueprintName = "KSCrash_static"
+            ReferencedContainer = "container:KSCrash-iOS.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

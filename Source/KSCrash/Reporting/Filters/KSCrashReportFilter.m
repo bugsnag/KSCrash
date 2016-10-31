@@ -209,9 +209,11 @@
                                 for(NSUInteger iSet = 0; iSet < filterCount; iSet++)
                                 {
                                     NSArray* reportSet = [reportSets objectAtIndex:iSet];
-                                    NSDictionary* report = [reportSet objectAtIndex:iReport];
-                                    [dict setObject:report
-                                             forKey:[keys objectAtIndex:iSet]];
+                                    if(reportSet.count>iReport){
+                                        NSDictionary* report = [reportSet objectAtIndex:iReport];
+                                        [dict setObject:report
+                                                 forKey:[keys objectAtIndex:iSet]];
+                                    }
                                 }
                                 [combinedReports addObject:dict];
                             }
@@ -272,6 +274,12 @@
         self.filters = expandedFilters;
     }
     return self;
+}
+
+- (void) addFilter:(id<KSCrashReportFilter>) filter
+{
+    NSMutableArray* mutableFilters = (NSMutableArray*)self.filters; // Shh! Don't tell anyone!
+    [mutableFilters insertObject:filter atIndex:0];
 }
 
 - (void) filterReports:(NSArray*) reports
