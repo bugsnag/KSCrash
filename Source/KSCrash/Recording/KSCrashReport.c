@@ -2210,12 +2210,16 @@ void kscrashreport_writeStandardReport(KSCrash_Context* const crashContext,
 
         writer->beginObject(writer, KSCrashField_Crash);
         {
-            kscrw_i_writeAllThreads(writer,
-                                    KSCrashField_Threads,
-                                    &crashContext->crash,
-                                    crashContext->config.introspectionRules.enabled,
-                                    crashContext->config.searchThreadNames,
-                                    crashContext->config.searchQueueNames);
+            // Don't write the threads for user reported crashes to improve performance
+            if(crashContext->crash.crashType != KSCrashTypeUserReported)
+            {
+                kscrw_i_writeAllThreads(writer,
+                                        KSCrashField_Threads,
+                                        &crashContext->crash,
+                                        crashContext->config.introspectionRules.enabled,
+                                        crashContext->config.searchThreadNames,
+                                        crashContext->config.searchQueueNames);
+            }
             kscrw_i_writeError(writer, KSCrashField_Error, &crashContext->crash);
         }
         writer->endContainer(writer);
