@@ -2186,8 +2186,11 @@ void kscrashreport_writeStandardReport(KSCrash_Context* const crashContext,
                                 KSCrashReportType_Standard,
                                 crashContext->config.crashID,
                                 crashContext->config.processName);
-
-        kscrw_i_writeBinaryImages(writer, KSCrashField_BinaryImages);
+        // Don't write the binary images for user reported crashes to improve performance
+        if(crashContext->crash.crashType != KSCrashTypeUserReported)
+        {
+            kscrw_i_writeBinaryImages(writer, KSCrashField_BinaryImages);
+        }
 
         kscrw_i_writeProcessState(writer, KSCrashField_ProcessState);
 
