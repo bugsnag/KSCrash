@@ -196,7 +196,7 @@
 
     KSCrashConfiguration *config = [[KSCrashConfiguration alloc] init];
 
-    config.crashNotifyCallback = ^(const struct KSCrashReportWriter *writer) {
+    config.crashNotifyCallback = ^(const struct KSCrashReportWriter *writer, bool __unused requiresAsyncSafety) {
         crashNotifyCallbackCalled = YES;
     };
 
