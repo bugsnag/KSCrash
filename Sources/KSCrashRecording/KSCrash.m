@@ -36,10 +36,10 @@
 #import "KSCrashMonitor_System.h"
 #import "KSCrashReport.h"
 #import "KSCrashReportFields.h"
+#import "KSDynamicLinker.h"
 #import "KSJSONCodecObjC.h"
 #import "KSNSErrorHelper.h"
 #import "KSSystemCapabilities.h"
-#import "KSDynamicLinker.h"
 
 // #define KSLogger_LocalLevel TRACE
 #import "KSLogger.h"
@@ -51,7 +51,6 @@
 #if __has_include(<AppKit/AppKit.h>)
 #import <AppKit/AppKit.h>
 #endif
-
 
 // ============================================================================
 #pragma mark - Globals -
@@ -229,7 +228,7 @@ static void currentSnapshotUserReportedExceptionHandler(NSException *exception)
     COPY_PRIMITIVE(parentProcessID);
     COPY_STRING(deviceAppHash);
     COPY_STRING(buildType);
-    COPY_PRIMITIVE(storageSize);  // this field is populated in an optional monitor
+    COPY_PRIMITIVE(storageSize);      // this field is populated in an optional monitor
     COPY_PRIMITIVE(freeStorageSize);  // this field is populated in an optional monitor
     COPY_PRIMITIVE(memorySize);
     COPY_PRIMITIVE(freeMemory);

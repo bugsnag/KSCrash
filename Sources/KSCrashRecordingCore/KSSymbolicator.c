@@ -24,10 +24,11 @@
 
 #include "KSSymbolicator.h"
 
-#include "KSLogger.h"
-#include "KSDynamicLinker.h"
 #include <mach-o/loader.h>
 #include <mach-o/nlist.h>
+
+#include "KSDynamicLinker.h"
+#include "KSLogger.h"
 
 /** Remove any pointer tagging from an instruction address
  * On armv7 the least significant bit of the pointer distinguishes
@@ -76,10 +77,11 @@ struct leb128_uintptr_context {
 };
 
 // Process a single byte of LEB128-encoded data and return 1 if it was the last byte of a value.
-static int leb128_uintptr_decode(struct leb128_uintptr_context *context, uint8_t input, uintptr_t *output) {
+static int leb128_uintptr_decode(struct leb128_uintptr_context *context, uint8_t input, uintptr_t *output)
+{
     context->value |= ((input & 0x7Ful) << context->shift);
     context->shift += 7;
-    if (input < 0x80) { // The most significant bit is not set, so this is the last byte.
+    if (input < 0x80) {  // The most significant bit is not set, so this is the last byte.
         *output = context->value;
         context->value = 0;
         context->shift = 0;
@@ -88,14 +90,15 @@ static int leb128_uintptr_decode(struct leb128_uintptr_context *context, uint8_t
     return 0;
 }
 
-#if __clang_major__ >= 11 // Xcode 10 does not like the following attribute
+#if __clang_major__ >= 11  // Xcode 10 does not like the following attribute
 __attribute__((annotate("oclint:suppress[deep nested block]")))
 #endif
-bool kssymbolicator_symbolicate(KSStackCursor *cursor) {
+bool kssymbolicator_symbolicate(KSStackCursor *cursor)
+{
     // Cursor at 0 idx is a dummy so we start stack from 1
     uintptr_t instructionAddress = cursor->state.currentDepth == 1
-                                    ? cursor->stackEntry.address
-                                    : CALL_INSTRUCTION_FROM_RETURN_ADDRESS(cursor->stackEntry.address);
+                                       ? cursor->stackEntry.address
+                                       : CALL_INSTRUCTION_FROM_RETURN_ADDRESS(cursor->stackEntry.address);
 
     KSBinaryImage *image = ksdl_image_at_address(instructionAddress);
     if (!image || !image->header) {
@@ -137,7 +140,7 @@ bool kssymbolicator_symbolicate(KSStackCursor *cursor) {
                             uintptr_t end = start + section->size;
                             if (instructionAddress < start || instructionAddress >= end) {
                                 KSLOG_ERROR("Address %p is outside the " SECT_TEXT " section of image %s",
-                                                (void *)instructionAddress, image->name);
+                                            (void *)instructionAddress, image->name);
                                 return false;
                             }
                             break;
@@ -147,7 +150,7 @@ bool kssymbolicator_symbolicate(KSStackCursor *cursor) {
                 break;
             }
 
-            case LC_FUNCTION_STARTS: // first appeared in
+            case LC_FUNCTION_STARTS:  // first appeared in
                 // - cctools-800 (Xcode 4.0)
                 // - ld64-123.2  (Xcode 4.0)
                 // - dyld-195.5  (OS X 10.7 / iOS 5)
@@ -174,14 +177,18 @@ bool kssymbolicator_symbolicate(KSStackCursor *cursor) {
     // The layout of segments in memory differs depending on whether the image is in the dyld cache.
     // Subtracting __LINKEDIT's fileoff converts a *file* offset into an offset relative to __LINKEDIT
     // that lets us compute the data's address in memory regardless of layout.
-#define get_linkedit_data(__dataoff__, __size__) ({ \
-    if (__dataoff__ < linkedit->fileoff) { \
-        KSLOG_DEBUG(#__dataoff__ " < linkedit->fileoff"); \
-        return false; } \
-    if (__dataoff__ + __size__ > linkedit->fileoff + linkedit->filesize) { \
-        KSLOG_DEBUG(#__dataoff__ " + " #__size__ " > linkedit->fileoff + linkedit->filesize"); \
-        return false; } \
-    (const void *)(__dataoff__ - linkedit->fileoff + linkedit_addr); })
+#define get_linkedit_data(__dataoff__, __size__)                                                   \
+    ({                                                                                             \
+        if (__dataoff__ < linkedit->fileoff) {                                                     \
+            KSLOG_DEBUG(#__dataoff__ " < linkedit->fileoff");                                      \
+            return false;                                                                          \
+        }                                                                                          \
+        if (__dataoff__ + __size__ > linkedit->fileoff + linkedit->filesize) {                     \
+            KSLOG_DEBUG(#__dataoff__ " + " #__size__ " > linkedit->fileoff + linkedit->filesize"); \
+            return false;                                                                          \
+        }                                                                                          \
+        (const void *)(__dataoff__ - linkedit->fileoff + linkedit_addr);                           \
+    })
 
     // Search functions starts data for a function that contains the address
     if (function_starts) {
@@ -189,7 +196,7 @@ bool kssymbolicator_symbolicate(KSStackCursor *cursor) {
         // Starting with delta from start of __TEXT
         uintptr_t addr = (uintptr_t)image->vmAddress + slide;
         uintptr_t func_start = addr;
-        struct leb128_uintptr_context context = {0};
+        struct leb128_uintptr_context context = { 0 };
         const uint8_t *data = get_linkedit_data(function_starts->dataoff, function_starts->datasize);
         for (uint32_t i = 0; i < function_starts->datasize; i++) {
             uintptr_t delta = 0;
@@ -230,7 +237,7 @@ bool kssymbolicator_symbolicate(KSStackCursor *cursor) {
         const nlist_t *syms = get_linkedit_data(symtab->symoff, symtab->nsyms * sizeof(nlist_t));
         const char *strings = get_linkedit_data(symtab->stroff, symtab->strsize);
         const uintptr_t symbol_address = (uintptr_t)cursor->stackEntry.symbolAddress - slide;
-        nlist_t best = {{0}};
+        nlist_t best = { { 0 } };
         // Scan the whole symtab because there can be > 1 symbol with the same n_value.
         // For example CoreFoundation has matching local `__forwarding_prep_0___` and
         // external `_CF_forwarding_prep_0` symbols.

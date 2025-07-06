@@ -52,10 +52,10 @@
 #include "KSStackCursor_Backtrace.h"
 #include "KSStackCursor_MachineContext.h"
 #include "KSString.h"
+#include "KSStringConversion.h"
 #include "KSSystemCapabilities.h"
 #include "KSThread.h"
 #include "KSThreadCache.h"
-#include "KSStringConversion.h"
 
 // #define KSLogger_LocalLevel TRACE
 #include <errno.h>
@@ -1058,7 +1058,7 @@ static void writeThread(const KSCrashReportWriter *const writer, const char *con
 
     KSStackCursor stackCursor;
     bool hasBacktrace = getStackCursor(crash, machineContext, &stackCursor);
-    const char* state = ksthread_state_name(threadState);
+    const char *state = ksthread_state_name(threadState);
 
     writer->beginObject(writer, key);
     {
@@ -1076,8 +1076,9 @@ static void writeThread(const KSCrashReportWriter *const writer, const char *con
             // pthread_getname_np() acquires no locks if passed pthread_self() as
             // of libpthread-330.201.1 (macOS 10.14 / iOS 12)
             bool isSelfThread = thread == ksthread_self();
-            char threadName[64] = {0};
-            if (isSelfThread && !pthread_getname_np(pthread_self(), threadName, sizeof(threadName)) && threadName[0] != 0) {
+            char threadName[64] = { 0 };
+            if (isSelfThread && !pthread_getname_np(pthread_self(), threadName, sizeof(threadName)) &&
+                threadName[0] != 0) {
                 writer->addStringElement(writer, KSCrashField_Name, threadName);
             }
         }
@@ -1235,7 +1236,7 @@ static void writeError(const KSCrashReportWriter *const writer, const char *cons
 #if KSCRASH_HOST_APPLE
         writer->beginObject(writer, KSCrashField_Mach);
         {
-            char buffer[20] = {0};
+            char buffer[20] = { 0 };
             const char *machExceptionName = ksmach_exceptionName(crash->mach.type);
             const char *machCodeName = crash->mach.code == 0 ? NULL : ksmach_kernelReturnCodeName(crash->mach.code);
             writer->addUIntegerElement(writer, KSCrashField_Exception, (unsigned)crash->mach.type);
@@ -1722,7 +1723,8 @@ void kscrashreport_setUserSectionWriteCallback(const KSReportWriteCallback userS
     g_userSectionWriteCallback = userSectionWriteCallback;
 }
 
-void kscrashreport_setThreadTracingEnabled(bool threadTracingEnabled) {
+void kscrashreport_setThreadTracingEnabled(bool threadTracingEnabled)
+{
 #if KSCRASH_HAS_THREADS_API
     g_shouldRecordThreads = threadTracingEnabled;
 #else

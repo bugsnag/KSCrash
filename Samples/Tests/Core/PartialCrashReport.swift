@@ -89,7 +89,7 @@ struct PartialCrashReport: Decodable {
                 var address: UInt64?
                 var type: String?
             }
-            
+
             var index: Int
             var state: String
             var crashed: Bool

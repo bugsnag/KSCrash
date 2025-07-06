@@ -29,17 +29,17 @@
 #include "KSCrashMonitorContextHelper.h"
 #include "KSID.h"
 #include "KSMachineContext.h"
+#include "KSMemory.h"
 #include "KSStackCursor_SelfThread.h"
 #include "KSThread.h"
-#include "KSMemory.h"
 
 // #define KSLogger_LocalLevel TRACE
 #include <cxxabi.h>
 #include <dlfcn.h>
+#include <execinfo.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <execinfo.h>
 
 #include <exception>
 #include <typeinfo>
@@ -117,7 +117,8 @@ void __cxa_throw(void *thrown_exception, std::type_info *tinfo, void (*dest)(voi
 }
 }
 
-static const char *getExceptionTypeName(std::type_info *tinfo) {
+static const char *getExceptionTypeName(std::type_info *tinfo)
+{
     // Runtime bug workaround: In some situations, __cxa_current_exception_type returns an invalid address.
     // Check to make sure it's in valid memory before we try to call tinfo->name().
     if (tinfo != NULL && ksmem_isMemoryReadable(tinfo, sizeof(*tinfo))) {
@@ -158,7 +159,7 @@ static void CPPExceptionTerminate(void)
         KSCrash_MonitorContext *crashContext = &g_monitorContext;
         memset(crashContext, 0, sizeof(*crashContext));
 
-        char descriptionBuff[DESCRIPTION_BUFFER_LENGTH] = {0};
+        char descriptionBuff[DESCRIPTION_BUFFER_LENGTH] = { 0 };
         if (!emptyThrow) {
             description = descriptionBuff;
 
@@ -170,9 +171,8 @@ static void CPPExceptionTerminate(void)
             } catch (std::exception &exc) {
                 strlcpy(descriptionBuff, exc.what(), sizeof(descriptionBuff));
             }
-#define CATCH_VALUE(TYPE, PRINTFTYPE)                                                                \
-catch (TYPE value) { snprintf(descriptionBuff, sizeof(descriptionBuff), "%" #PRINTFTYPE, value); \
-}
+#define CATCH_VALUE(TYPE, PRINTFTYPE) \
+    catch (TYPE value) { snprintf(descriptionBuff, sizeof(descriptionBuff), "%" #PRINTFTYPE, value); }
             CATCH_VALUE(char, d)
             CATCH_VALUE(short, d)
             CATCH_VALUE(int, d)

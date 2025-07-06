@@ -30,13 +30,7 @@
 #import "KSDynamicLinker.h"
 
 const struct mach_header header1 = {
-    .magic = MH_MAGIC,
-    .cputype = 0,
-    .cpusubtype = 0,
-    .filetype = 0,
-    .ncmds = 1,
-    .sizeofcmds = 0,
-    .flags = 0
+    .magic = MH_MAGIC, .cputype = 0, .cpusubtype = 0, .filetype = 0, .ncmds = 1, .sizeofcmds = 0, .flags = 0
 };
 const struct segment_command command1 = {
     .cmd = LC_SEGMENT,
@@ -47,13 +41,7 @@ const struct segment_command command1 = {
 };
 
 const struct mach_header header2 = {
-    .magic = MH_MAGIC,
-    .cputype = 0,
-    .cpusubtype = 0,
-    .filetype = 0,
-    .ncmds = 1,
-    .sizeofcmds = 0,
-    .flags = 0
+    .magic = MH_MAGIC, .cputype = 0, .cpusubtype = 0, .filetype = 0, .ncmds = 1, .sizeofcmds = 0, .flags = 0
 };
 const struct segment_command command2 = {
     .cmd = LC_SEGMENT,
@@ -72,7 +60,8 @@ extern void ksbic_init(void);
 
 @implementation KSDynamicLinker_Tests
 
-+ (void)setUp {
++ (void)setUp
+{
     [super setUp];
     ksdl_binary_images_initialize();
 }
@@ -85,7 +74,8 @@ extern void ksbic_init(void);
     [NSThread sleepForTimeInterval:0.1];
 }
 
-static KSBinaryImage *get_tail(KSBinaryImage *head) {
+static KSBinaryImage *get_tail(KSBinaryImage *head)
+{
     KSBinaryImage *current = head;
     for (; current->next != NULL; current = current->next) {
     }
@@ -124,7 +114,8 @@ static KSBinaryImage *get_tail(KSBinaryImage *head) {
     XCTAssertEqual(image, NULL, @"");
 }
 
-- (void)testAddRemove {
+- (void)testAddRemove
+{
     ksdl_test_support_mach_headers_reset();
 
     ksdl_test_support_mach_headers_add_image(&header1, 0);
@@ -155,7 +146,8 @@ static KSBinaryImage *get_tail(KSBinaryImage *head) {
     XCTAssert(listTail->next->unloaded == TRUE);
 }
 
-- (void)testFindImageAtAddress {
+- (void)testFindImageAtAddress
+{
     ksdl_test_support_mach_headers_reset();
 
     ksdl_test_support_mach_headers_add_image(&header1, 0);
@@ -169,24 +161,26 @@ static KSBinaryImage *get_tail(KSBinaryImage *head) {
     XCTAssertEqual(item->vmAddress, command2.vmaddr);
 }
 
-- (void)testGetSelfImage {
+- (void)testGetSelfImage
+{
     ksdl_binary_images_initialize();
 
-    NSString *nameStr =  [NSString stringWithUTF8String:ksdl_get_self_image()->name];
+    NSString *nameStr = [NSString stringWithUTF8String:ksdl_get_self_image()->name];
     XCTAssertNotEqual([nameStr rangeOfString:@"KSCrashRecordingCoreTests"].location, NSNotFound);
 }
 
-- (void)testMainImage {
-    XCTAssertEqualObjects(@(ksdl_get_main_image()->name),
-                          NSBundle.mainBundle.executablePath);
+- (void)testMainImage
+{
+    XCTAssertEqualObjects(@(ksdl_get_main_image()->name), NSBundle.mainBundle.executablePath);
 }
 
-- (void)testImageAtAddress {
+- (void)testImageAtAddress
+{
     for (NSNumber *number in NSThread.callStackReturnAddresses) {
         uintptr_t address = number.unsignedIntegerValue;
         KSBinaryImage *image = ksdl_image_at_address(address);
-        struct dl_info dlinfo = {0};
-        if (dladdr((const void*)address, &dlinfo) != 0) {
+        struct dl_info dlinfo = { 0 };
+        if (dladdr((const void *)address, &dlinfo) != 0) {
             // If dladdr was able to locate the image, so should bsg_mach_headers_image_at_address
             XCTAssertEqual(image->header, dlinfo.dli_fbase);
             XCTAssertEqual(image->vmAddress + image->slide, (uint64_t)dlinfo.dli_fbase);

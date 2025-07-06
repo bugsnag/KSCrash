@@ -47,15 +47,15 @@
     ksmc_resumeEnvironment(threads1, numThreads1);
 }
 
-- (void) startTheBackgroundJob {
+- (void)startTheBackgroundJob
+{
     sleep(5);
 }
 
 - (void)testMaxThreadsInContext
 {
     KSMC_NEW_CONTEXT(machineContext);
-    for (int i = 0; i < 1005; ++i)
-    {
+    for (int i = 0; i < 1005; ++i) {
         [NSThread detachNewThreadSelector:@selector(startTheBackgroundJob) toTarget:self withObject:nil];
     }
 

@@ -78,7 +78,7 @@ public class InstallBridge: ObservableObject {
         config = .init()
         config.crashNotifyCallback = { (writer, requiresAsyncSafety) -> Void in
             Self.logger.info("User callback has requireAsyncSafety value: \(String(requiresAsyncSafety))")
-         }
+        }
 
         $basePath
             .removeDuplicates()

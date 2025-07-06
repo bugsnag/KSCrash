@@ -30,9 +30,9 @@
 #import "KSCrashMonitorContext.h"
 #import "KSDate.h"
 #import "KSDynamicLinker.h"
+#import "KSJailbreak.h"
 #import "KSSysCtl.h"
 #import "KSSystemCapabilities.h"
-#import "KSJailbreak.h"
 
 // #define KSLogger_LocalLevel TRACE
 #import "KSLogger.h"
@@ -291,14 +291,15 @@ static const char *getCurrentCPUArch(void)
  *
  * @return YES if the device is jailbroken.
  */
-static inline bool isJailbroken(void) {
+static inline bool isJailbroken(void)
+{
     static bool initialized_jb;
     static bool is_jb;
-    if(!initialized_jb) {
+    if (!initialized_jb) {
         get_jailbreak_status(&is_jb);
 
         // Also keep using the old detection method.
-        if(ksdl_imageNamed("MobileSubstrate", false) != NULL) {
+        if (ksdl_imageNamed("MobileSubstrate", false) != NULL) {
             is_jb = true;
         }
         initialized_jb = true;
@@ -311,7 +312,8 @@ static inline bool isJailbroken(void) {
  *
  * @return YES if app is translated using Rosetta
  */
-static bool procTranslated(void) {
+static bool procTranslated(void)
+{
 #if KSCRASH_HOST_MAC
     // https://developer.apple.com/documentation/apple-silicon/about-the-rosetta-translation-environment
     int proc_translated = 0;
@@ -523,7 +525,7 @@ static void initialize(void)
         g_systemData.buildType = getBuildType();
         g_systemData.memorySize = kssysctl_uint64ForName("hw.memsize");
 
-        const char* binaryArch = getCPUArchForCPUType(header->cputype, header->cpusubtype);
+        const char *binaryArch = getCPUArchForCPUType(header->cputype, header->cpusubtype);
         g_systemData.binaryArchitecture = binaryArch == NULL ? "" : binaryArch;
 
 #ifdef __clang_version__
