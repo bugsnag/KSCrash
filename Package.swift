@@ -152,12 +152,6 @@ let package = Package(
                 .target(name: Targets.core),
             ]
         ),
-        .testTarget(
-            name: Targets.recordingCoreSwift.tests,
-            dependencies: [
-                .target(name: Targets.recordingCore)
-            ]
-        ),
 
         .target(
             name: Targets.reportingCore,
@@ -267,7 +261,6 @@ enum Targets {
     static let sinks = "KSCrashSinks"
     static let installations = "KSCrashInstallations"
     static let recordingCore = "KSCrashRecordingCore"
-    static let recordingCoreSwift = "KSCrashRecordingCoreSwift"
     static let reportingCore = "KSCrashReportingCore"
     static let core = "KSCrashCore"
     static let discSpaceMonitor = "KSCrashDiscSpaceMonitor"
