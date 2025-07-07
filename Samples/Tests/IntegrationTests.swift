@@ -77,7 +77,7 @@ final class CppTests: IntegrationTestBase {
         if let imageList = imageList {
             for item in imageList {
                 XCTAssertNotNil(item)
-                if item.name.contains("Sample.app/Sample") {
+                if item.name!.contains("Sample.app/Sample") {
                     sampleAppFound = true
                     XCTAssertNotEqual(item.image_addr, 0)
                     XCTAssertNotEqual(item.image_size, 0)
