@@ -186,10 +186,15 @@ final class UserReportedTests: IntegrationTestBase {
 
         let rawReport = try readPartialCrashReport()
         try rawReport.validate()
+        let userInfo = try JSONDecoder().decode(
+            [String: String].self,
+            from: rawReport.crash?.error?.nsexception?.userInfo?
+                .data(using: .utf8) ?? Data()
+        )
         XCTAssertEqual(rawReport.crash?.error?.type, "nsexception")
         XCTAssertEqual(rawReport.crash?.error?.reason, Self.crashReason)
         XCTAssertEqual(rawReport.crash?.error?.nsexception?.name, Self.crashName)
-        XCTAssertTrue(rawReport.crash?.error?.nsexception?.userInfo?.contains("a = b") ?? false)
+        XCTAssertEqual(userInfo["a"], "b")
         XCTAssertGreaterThanOrEqual(rawReport.crash?.threads?.count ?? 0, 2, "Expected to have at least 2 threads")
         let backtraceFrame = rawReport.crashedThread?.backtrace.contents.first(where: {
             $0.symbol_name?.contains(KSCrashNSExceptionStacktraceFuncName) ?? false
