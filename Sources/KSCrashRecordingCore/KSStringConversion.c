@@ -25,35 +25,36 @@
 //
 
 #include "KSStringConversion.h"
-#include <memory.h>
-#include <math.h>
 
+#include <math.h>
+#include <memory.h>
 #include <stdio.h>
 #include <uuid/uuid.h>
 
 // Max uint64 is 18446744073709551615
 #define MAX_UINT64_DIGITS 20
 
-static char g_hexNybbles[] = {'0', '1', '2', '3', '4', '5', '6', '7',
-                              '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+static char g_hexNybbles[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
-static char g_hexNybblesUppercase[] = {'0', '1', '2', '3', '4', '5', '6', '7',
-                                       '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+static char g_hexNybblesUppercase[] = {
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+};
 
-static int uuidSegmentLengths[5] = {4, 2, 2, 2, 6};
+static int uuidSegmentLengths[5] = { 4, 2, 2, 2, 6 };
 
-size_t kssc_uint64_to_hex(uint64_t value, char* dst, int min_digits, bool uppercase) {
+size_t kssc_uint64_to_hex(uint64_t value, char *dst, int min_digits, bool uppercase)
+{
     if (min_digits < 1) {
         min_digits = 1;
     } else if (min_digits > 16) {
         min_digits = 16;
     }
 
-    char buff[MAX_UINT64_DIGITS+1];
-    buff[sizeof(buff)-1] = 0;
+    char buff[MAX_UINT64_DIGITS + 1];
+    buff[sizeof(buff) - 1] = 0;
     size_t index = sizeof(buff) - 2;
-    for(int digitCount = 1;; digitCount++) {
-        buff[index] = uppercase ? g_hexNybblesUppercase[(value&15)] : g_hexNybbles[(value&15)];
+    for (int digitCount = 1;; digitCount++) {
+        buff[index] = uppercase ? g_hexNybblesUppercase[(value & 15)] : g_hexNybbles[(value & 15)];
         value >>= 4;
         if (value == 0 && digitCount >= min_digits) {
             break;
@@ -62,12 +63,13 @@ size_t kssc_uint64_to_hex(uint64_t value, char* dst, int min_digits, bool upperc
     }
 
     size_t length = sizeof(buff) - index;
-    memcpy(dst, buff+index, length);
+    memcpy(dst, buff + index, length);
     return length - 1;
 }
 
-void kssc_uuid_to_string(uuid_t uuid, char* dst) {
-    char* currentDst = dst;
+void kssc_uuid_to_string(uuid_t uuid, char *dst)
+{
+    char *currentDst = dst;
     int valueIndex = 0;
     for (int segmentIndex = 0; segmentIndex < 5; segmentIndex++) {
         int segmentLength = uuidSegmentLengths[segmentIndex];

@@ -37,94 +37,94 @@
 {
     uint64_t value = 0;
     char result[17];
-    
+
     size_t size = kssc_uint64_to_hex(value, result, 0, false);
 
     NSString *resultString = [NSString stringWithCString:result encoding:NSUTF8StringEncoding];
     XCTAssertEqual(size, 1);
-    XCTAssertTrue([resultString isEqualToString: @"0"]);
+    XCTAssertTrue([resultString isEqualToString:@"0"]);
 }
 
 - (void)testConvertUint64ZeroWithMinDigitsToString
 {
     uint64_t value = 0;
     char result[17];
-    
+
     size_t size = kssc_uint64_to_hex(value, result, 10, false);
 
     NSString *resultString = [NSString stringWithCString:result encoding:NSUTF8StringEncoding];
     XCTAssertEqual(size, 10);
-    XCTAssertTrue([resultString isEqualToString: @"0000000000"]);
+    XCTAssertTrue([resultString isEqualToString:@"0000000000"]);
 }
 
 - (void)testConvertUint64MaxToString
 {
     uint64_t value = UINT64_MAX;
     char result[17];
-    
+
     size_t size = kssc_uint64_to_hex(value, result, 0, false);
 
     NSString *resultString = [NSString stringWithCString:result encoding:NSUTF8StringEncoding];
     XCTAssertEqual(size, 16);
-    XCTAssertTrue([resultString isEqualToString: @"ffffffffffffffff"]);
+    XCTAssertTrue([resultString isEqualToString:@"ffffffffffffffff"]);
 }
 
 - (void)testConvertUint64MaxToUppercaseString
 {
     uint64_t value = UINT64_MAX;
     char result[17];
-    
+
     size_t size = kssc_uint64_to_hex(value, result, 0, true);
 
     NSString *resultString = [NSString stringWithCString:result encoding:NSUTF8StringEncoding];
     XCTAssertEqual(size, 16);
-    XCTAssertTrue([resultString isEqualToString: @"FFFFFFFFFFFFFFFF"]);
+    XCTAssertTrue([resultString isEqualToString:@"FFFFFFFFFFFFFFFF"]);
 }
 
 - (void)testConvertUint64ToString
 {
     uint64_t value = 0x2fe5c7f8;
     char result[17];
-    
+
     size_t size = kssc_uint64_to_hex(value, result, 0, false);
 
     NSString *resultString = [NSString stringWithCString:result encoding:NSUTF8StringEncoding];
     XCTAssertEqual(size, 8);
-    XCTAssertTrue([resultString isEqualToString: @"2fe5c7f8"]);
+    XCTAssertTrue([resultString isEqualToString:@"2fe5c7f8"]);
 }
 
 - (void)testConvertUint64ToUppercaseString
 {
     uint64_t value = 0x2fe5c7f8;
     char result[17];
-    
+
     size_t size = kssc_uint64_to_hex(value, result, 0, true);
 
     NSString *resultString = [NSString stringWithCString:result encoding:NSUTF8StringEncoding];
     XCTAssertEqual(size, 8);
-    XCTAssertTrue([resultString isEqualToString: @"2FE5C7F8"]);
+    XCTAssertTrue([resultString isEqualToString:@"2FE5C7F8"]);
 }
 
 - (void)testConvertAllZerosUUIDToString
 {
-    uuid_t uuid = {0};
+    uuid_t uuid = { 0 };
     char result[37];
-    
+
     kssc_uuid_to_string(uuid, result);
-    
+
     NSString *resultString = [NSString stringWithCString:result encoding:NSUTF8StringEncoding];
-    XCTAssertTrue([resultString isEqualToString: @"00000000-0000-0000-0000-000000000000"]);
+    XCTAssertTrue([resultString isEqualToString:@"00000000-0000-0000-0000-000000000000"]);
 }
 
 - (void)testConvertUUIDToString
 {
-    uuid_t uuid = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    uuid_t uuid = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
     char result[37];
-    
+
     kssc_uuid_to_string(uuid, result);
-    
+
     NSString *resultString = [NSString stringWithCString:result encoding:NSUTF8StringEncoding];
-    XCTAssertTrue([resultString isEqualToString: @"00010203-0405-0607-0809-0A0B0C0D0E0F"]);
+    XCTAssertTrue([resultString isEqualToString:@"00010203-0405-0607-0809-0A0B0C0D0E0F"]);
 }
 
 @end

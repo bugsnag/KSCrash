@@ -28,9 +28,9 @@
 #define HDR_KSDynamicLinker_h
 
 #include <dlfcn.h>
+#include <stdatomic.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdatomic.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -74,7 +74,7 @@ typedef struct ks_mach_image {
     const char *crashInfoMessage2;
     const char *crashInfoBacktrace;
     const char *crashInfoSignature;
-    
+
     /// The next image in the linked list
     _Atomic(struct ks_mach_image *) next;
 } KSBinaryImage;
@@ -135,7 +135,7 @@ KSBinaryImage *ksdl_get_self_image(void);
 
 /**
  * Find the loaded binary image that contains the specified instruction address.
-*/
+ */
 KSBinaryImage *ksdl_image_at_address(const uintptr_t address);
 
 /** Get the address of the first command following a header (which will be of
@@ -146,7 +146,7 @@ KSBinaryImage *ksdl_image_at_address(const uintptr_t address);
  * @return The address of the first command, or NULL if none was found (which
  *         should not happen unless the header or image is corrupt).
  */
-uintptr_t ksdl_first_cmd_after_header(const struct mach_header * header);
+uintptr_t ksdl_first_cmd_after_header(const struct mach_header *header);
 
 /**
  * Resets mach header data (for unit tests).

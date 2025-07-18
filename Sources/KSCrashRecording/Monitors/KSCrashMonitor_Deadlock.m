@@ -29,9 +29,9 @@
 #import <Foundation/Foundation.h>
 #import "KSCrashMonitorContext.h"
 #import "KSCrashMonitorContextHelper.h"
+#import "KSCrashMonitor_AppState.h"
 #import "KSID.h"
 #import "KSStackCursor_MachineContext.h"
-#import "KSCrashMonitor_AppState.h"
 #import "KSThread.h"
 
 // #define KSLogger_LocalLevel TRACE
