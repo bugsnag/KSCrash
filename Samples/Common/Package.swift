@@ -36,9 +36,9 @@ let package = Package(
     .target(
       name: "LibraryBridge",
       dependencies: [
-        .product(name: "Recording", package: "KSCrash"),
-        .product(name: "Reporting", package: "KSCrash"),
-        .product(name: "DemangleFilter", package: "KSCrash"),
+        .product(name: "Recording", package: "KSCrash-new"),
+        .product(name: "Reporting", package: "KSCrash-new"),
+        .product(name: "DemangleFilter", package: "KSCrash-new"),
         .product(name: "Logging", package: "swift-log"),
       ]
     ),
@@ -49,8 +49,8 @@ let package = Package(
         name: "IntegrationTestsHelper",
         dependencies: [
             .target(name: "CrashTriggers"),
-            .product(name: "Recording", package: "KSCrash"),
-            .product(name: "Reporting", package: "KSCrash"),
+            .product(name: "Recording", package: "KSCrash-new"),
+            .product(name: "Reporting", package: "KSCrash-new"),
             .product(name: "Logging", package: "swift-log"),
         ]
     ),

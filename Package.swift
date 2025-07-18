@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-  name: "KSCrash",
+  name: "KSCrash-new",
   platforms: [
     .iOS(.v12),
     .tvOS(.v12),
