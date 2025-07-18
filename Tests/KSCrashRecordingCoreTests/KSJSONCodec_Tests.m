@@ -1962,7 +1962,7 @@ static int noOpStringHandler(const char *name, const char * value, void *const u
 
     XCTAssertEqual(ksjson_decode(jsonData, 84, buffer, 1000, &callbacksWithoutOnStringElement, userData, &errorOffset), KSJSON_ERROR_INVALID_ARGUMENT);
     
-    KSJSONDecodeCallbacks noCallbacks;
+    KSJSONDecodeCallbacks noCallbacks = {};
 
     XCTAssertEqual(ksjson_decode(jsonData, 84, buffer, 1000, &noCallbacks, userData, &errorOffset), KSJSON_ERROR_INVALID_ARGUMENT);
 }
