@@ -94,8 +94,6 @@ KSBinaryImage *ksdl_get_images(void);
  *
  * @param header The Mach binary image header.
  *
- * @param image_name The name of the image.
- *
  * @param buffer A structure to hold the information.
  *
  * @return True if the image was successfully queried.
