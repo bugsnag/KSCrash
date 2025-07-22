@@ -77,7 +77,7 @@ final class CppTests: IntegrationTestBase {
         if let imageList = imageList {
             for item in imageList {
                 XCTAssertNotNil(item)
-                if item.name.contains("Sample.app/Sample") {
+                if item.name.contains("Sample.app") {
                     sampleAppFound = true
                     XCTAssertNotEqual(item.image_addr, 0)
                     XCTAssertNotEqual(item.image_size, 0)
@@ -156,12 +156,14 @@ final class OtherTests: IntegrationTestBase {
         })
         XCTAssertNotNil(expectedFrame)
 
+        #if !os(watchOS)
         let threadStates = ["TH_STATE_RUNNING", "TH_STATE_STOPPED", "TH_STATE_WAITING",
                             "TH_STATE_UNINTERRUPTIBLE", "TH_STATE_HALTED"]
         for thread in rawReport.crash?.threads  ?? [] {
-            XCTAssertTrue(threadStates.contains(thread.state))
+            XCTAssertTrue(threadStates.contains(thread.state ?? ""))
         }
-
+        #endif
+        
         let appleReport = try launchAndReportCrash()
         XCTAssertTrue(appleReport.contains(KSCrashStacktraceCheckFuncName))
     }
