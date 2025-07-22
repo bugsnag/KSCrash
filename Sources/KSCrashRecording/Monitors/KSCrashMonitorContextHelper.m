@@ -26,6 +26,8 @@
 #define NSAPPLICATION NSClassFromString(@"NSApplication")
 #endif
 
+#if TARGET_OS_IOS || TARGET_OS_TV || TARGET_OS_VISION || TARGET_OS_WATCH
+
 static bool isRunningInAppExtension(void)
 {
     // From "Information Property List Key Reference" > "App Extension Keys"
@@ -37,6 +39,8 @@ static bool isRunningInAppExtension(void)
     // Each Xcode app extension template is preconfigured with the appropriate extension point identifier key.
     return NSBundle.mainBundle.infoDictionary[@"NSExtension"][@"NSExtensionPointIdentifier"] != nil;
 }
+
+#endif
 
 #if TARGET_OS_IOS || TARGET_OS_TV || TARGET_OS_VISION
 

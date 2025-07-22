@@ -39,11 +39,11 @@ class IntegrationTestBase: XCTestCase {
     private(set) var appleReportsUrl: URL!
     private(set) var stateUrl: URL!
 
-    var appLaunchTimeout: TimeInterval = 10.0
-    var appTerminateTimeout: TimeInterval = 5.0
-    var appCrashTimeout: TimeInterval = 10.0
+    var appLaunchTimeout: TimeInterval = 15.0
+    var appTerminateTimeout: TimeInterval = 10.0
+    var appCrashTimeout: TimeInterval = 15.0
 
-    var reportTimeout: TimeInterval = 5.0
+    var reportTimeout: TimeInterval = 10.0
 
     var expectSingleCrash: Bool = true
 

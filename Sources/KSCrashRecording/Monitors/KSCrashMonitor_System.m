@@ -319,11 +319,11 @@ static bool procTranslated(void)
     int proc_translated = 0;
     size_t size = sizeof(proc_translated);
     if (!sysctlbyname("sysctl.proc_translated", &proc_translated, &size, NULL, 0) && proc_translated) {
-        return @YES;
+        return YES;
     }
 #endif
 
-    return @NO;
+    return NO;
 }
 
 /** Check if the current build is a debug build.

@@ -55,7 +55,6 @@
 #include "KSStringConversion.h"
 #include "KSSystemCapabilities.h"
 #include "KSThread.h"
-#include "KSThreadCache.h"
 
 // #define KSLogger_LocalLevel TRACE
 #include <errno.h>
