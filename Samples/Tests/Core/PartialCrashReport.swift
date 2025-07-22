@@ -82,7 +82,7 @@ struct PartialCrashReport: Decodable {
             }
             
             var index: Int
-            var state: String
+            var state: String?
             var crashed: Bool
             var backtrace: Backtrace
             var notable_addresses: [String: Address]?

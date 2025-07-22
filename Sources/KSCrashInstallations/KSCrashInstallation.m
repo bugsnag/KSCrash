@@ -34,10 +34,10 @@
 #import "KSCrashReportFilterBasic.h"
 #import "KSCrashReportFilterDemangle.h"
 #import "KSCrashReportFilterDoctor.h"
+#import "KSDynamicLinker.h"
 #import "KSJSONCodecObjC.h"
 #import "KSLogger.h"
 #import "KSNSErrorHelper.h"
-#import "KSDynamicLinker.h"
 
 /** Max number of properties that can be defined for writing to the report */
 #define kMaxProperties 500
@@ -240,21 +240,22 @@ static CrashHandlerData *g_crashHandlerData;
         g_crashHandlerData = self.crashHandlerData;
         ksdl_binary_images_initialize();
 
-        configuration.crashNotifyCallback = ^(const struct KSCrashReportWriter *_Nonnull writer, bool requiresAsyncSafety) {
-            CrashHandlerData *crashHandlerData = g_crashHandlerData;
-            if (crashHandlerData == NULL) {
-                return;
-            }
-            for (int i = 0; i < crashHandlerData->reportFieldsCount; i++) {
-                ReportField *field = crashHandlerData->reportFields[i];
-                if (field->key != NULL && field->value != NULL) {
-                    writer->addJSONElement(writer, field->key, field->value, true);
+        configuration.crashNotifyCallback =
+            ^(const struct KSCrashReportWriter *_Nonnull writer, bool requiresAsyncSafety) {
+                CrashHandlerData *crashHandlerData = g_crashHandlerData;
+                if (crashHandlerData == NULL) {
+                    return;
                 }
-            }
-            if (crashHandlerData->userCrashCallback != NULL) {
-                crashHandlerData->userCrashCallback(writer, requiresAsyncSafety);
-            }
-        };
+                for (int i = 0; i < crashHandlerData->reportFieldsCount; i++) {
+                    ReportField *field = crashHandlerData->reportFields[i];
+                    if (field->key != NULL && field->value != NULL) {
+                        writer->addJSONElement(writer, field->key, field->value, true);
+                    }
+                }
+                if (crashHandlerData->userCrashCallback != NULL) {
+                    crashHandlerData->userCrashCallback(writer, requiresAsyncSafety);
+                }
+            };
 
         NSError *installError = nil;
         BOOL success = [handler installWithConfiguration:configuration error:&installError];

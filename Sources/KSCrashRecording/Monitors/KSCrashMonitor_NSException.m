@@ -55,7 +55,8 @@ static NSUncaughtExceptionHandler *g_previousUncaughtExceptionHandler;
 #pragma mark - Helpers -
 // ============================================================================
 
-BOOL jsonDictionaryIsValid(NSDictionary *obj) {
+BOOL jsonDictionaryIsValid(NSDictionary *obj)
+{
     @try {
         return [obj isKindOfClass:[NSDictionary class]] && [NSJSONSerialization isValidJSONObject:(id _Nonnull)obj];
     } @catch (NSException *exception) {
@@ -63,7 +64,8 @@ BOOL jsonDictionaryIsValid(NSDictionary *obj) {
     }
 }
 
-NSDictionary * prepareUserInfoDictionary(NSDictionary *dictionary) {
+NSDictionary *prepareUserInfoDictionary(NSDictionary *dictionary)
+{
     if (!dictionary) {
         return nil;
     }
@@ -76,7 +78,7 @@ NSDictionary * prepareUserInfoDictionary(NSDictionary *dictionary) {
             continue;
         }
         const id value = dictionary[key];
-        if (jsonDictionaryIsValid(@{key: value})) {
+        if (jsonDictionaryIsValid(@ { key : value })) {
             json[key] = value;
         } else if ([value isKindOfClass:[NSDictionary class]]) {
             json[key] = prepareUserInfoDictionary(value);
@@ -155,8 +157,7 @@ static KS_NOINLINE void handleException(NSException *exception, BOOL isUserRepor
             exception.userInfo != nil ? [NSString stringWithFormat:@"%@", exception.userInfo] : nil;
 
         // If possible, convert to JSON string
-        if (exception.userInfo != nil)
-        {
+        if (exception.userInfo != nil) {
             NSError *error = nil;
             NSDictionary *userInfoDict = prepareUserInfoDictionary(exception.userInfo);
             @try {
@@ -164,7 +165,8 @@ static KS_NOINLINE void handleException(NSException *exception, BOOL isUserRepor
                 if (error == nil && userInfoData != nil) {
                     userInfoString = [[NSString alloc] initWithData:userInfoData encoding:NSUTF8StringEncoding];
                 }
-            } @catch (NSException *exception) {}
+            } @catch (NSException *exception) {
+            }
         }
 
         KSCrash_MonitorContext *crashContext = &g_monitorContext;

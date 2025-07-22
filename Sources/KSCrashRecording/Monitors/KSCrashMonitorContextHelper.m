@@ -5,12 +5,12 @@
 //  Created by Daria Bialobrzeska on 16/05/2025.
 //
 
-#import "KSLogger.h"
 #import <mach/mach.h>
+#import "KSLogger.h"
 
 #if __has_include(<UIKit/UIKit.h>)
 #import <UIKit/UIKit.h>
-#define UIAPPLICATION   NSClassFromString(@"UIApplication")
+#define UIAPPLICATION NSClassFromString(@"UIApplication")
 #endif
 
 #if __has_include(<WatchKit/WatchKit.h>)
@@ -23,9 +23,10 @@
 // Calling code should be prepared for classes to not be found when AppKit is not linked.
 #if __has_include(<AppKit/AppKit.h>)
 #import <AppKit/AppKit.h>
-#define NSAPPLICATION   NSClassFromString(@"NSApplication")
+#define NSAPPLICATION NSClassFromString(@"NSApplication")
 #endif
 
+#if TARGET_OS_IOS || TARGET_OS_TV || TARGET_OS_VISION || TARGET_OS_WATCH
 
 static bool isRunningInAppExtension(void)
 {
@@ -39,9 +40,12 @@ static bool isRunningInAppExtension(void)
     return NSBundle.mainBundle.infoDictionary[@"NSExtension"][@"NSExtensionPointIdentifier"] != nil;
 }
 
+#endif
+
 #if TARGET_OS_IOS || TARGET_OS_TV || TARGET_OS_VISION
 
-static UIApplication * getUIApplication(void) {
+static UIApplication *getUIApplication(void)
+{
     // +sharedApplication is unavailable to app extensions
     if (isRunningInAppExtension()) {
         return nil;
@@ -52,7 +56,8 @@ static UIApplication * getUIApplication(void) {
 }
 #endif
 
-static bool getIsForeground(void) {
+static bool getIsForeground(void)
+{
 #if TARGET_OS_OSX
     return [[NSAPPLICATION sharedApplication] isActive];
 #endif
@@ -67,8 +72,7 @@ static bool getIsForeground(void) {
     mach_msg_type_number_t count = TASK_CATEGORY_POLICY_COUNT;
     boolean_t get_default = FALSE;
     // task_policy_get() is prohibited on tvOS and watchOS
-    kern_return_t kr = task_policy_get(mach_task_self(), TASK_CATEGORY_POLICY,
-                                       (void *)&policy, &count, &get_default);
+    kern_return_t kr = task_policy_get(mach_task_self(), TASK_CATEGORY_POLICY, (void *)&policy, &count, &get_default);
     if (kr == KERN_SUCCESS) {
         // TASK_FOREGROUND_APPLICATION  -> normal foreground launch
         // TASK_NONUI_APPLICATION       -> background launch
@@ -121,7 +125,4 @@ static bool getIsForeground(void) {
 #endif
 }
 
-bool ksmc_isInForeground(void)
-{
-    return getIsForeground();
-}
+bool ksmc_isInForeground(void) { return getIsForeground(); }

@@ -33,8 +33,8 @@
 #include <mach-o/nlist.h>
 #include <mach-o/stab.h>
 #include <os/trace.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "KSLogger.h"
 #include "KSMemory.h"
@@ -65,7 +65,7 @@ static void register_for_changes(void);
 static void add_image(const struct mach_header *header, intptr_t slide);
 static void remove_image(const struct mach_header *header, intptr_t slide);
 static intptr_t compute_slide(const struct mach_header *header);
-static const char * get_path(const struct mach_header *header);
+static const char *get_path(const struct mach_header *header);
 
 static const struct dyld_all_image_infos *g_all_image_infos;
 
@@ -79,7 +79,8 @@ static KSBinaryImage *g_self_image;
 
 static _Atomic(bool) is_image_list_initialized;
 
-void ksdl_binary_images_initialize(void) {
+void ksdl_binary_images_initialize(void)
+{
     bool expected = false;
     if (!atomic_compare_exchange_strong(&is_image_list_initialized, &expected, true)) {
         // Already called
@@ -90,10 +91,11 @@ void ksdl_binary_images_initialize(void) {
     register_for_changes();
 }
 
-static void register_dyld_images(void) {
+static void register_dyld_images(void)
+{
     // /usr/lib/dyld's mach header is is not exposed via the _dyld APIs, so to be able to include information
     // about stack frames in dyld`start (for example) we need to acess "_dyld_all_image_infos"
-    task_dyld_info_data_t dyld_info = {0};
+    task_dyld_info_data_t dyld_info = { 0 };
     mach_msg_type_number_t count = TASK_DYLD_INFO_COUNT;
     kern_return_t kr = task_info(mach_task_self(), TASK_DYLD_INFO, (task_info_t)&dyld_info, &count);
     if (kr == KERN_SUCCESS && dyld_info.all_image_info_addr) {
@@ -105,8 +107,7 @@ static void register_dyld_images(void) {
 #if TARGET_OS_SIMULATOR
         // Get the mach header for `dyld_sim` which is not exposed via the _dyld APIs
         // Note: dladdr() returns `/usr/lib/dyld` as the dli_fname for this image :-?
-        if (g_all_image_infos->infoArray &&
-            strstr(g_all_image_infos->infoArray->imageFilePath, "/usr/lib/dyld_sim")) {
+        if (g_all_image_infos->infoArray && strstr(g_all_image_infos->infoArray->imageFilePath, "/usr/lib/dyld_sim")) {
             const struct mach_header *header = g_all_image_infos->infoArray->imageLoadAddress;
             add_image(header, compute_slide(header));
         }
@@ -116,7 +117,8 @@ static void register_dyld_images(void) {
     }
 }
 
-static intptr_t compute_slide(const struct mach_header *header) {
+static intptr_t compute_slide(const struct mach_header *header)
+{
     uintptr_t cmdPtr = ksdl_first_cmd_after_header(header);
     if (!cmdPtr) {
         return 0;
@@ -142,7 +144,8 @@ static intptr_t compute_slide(const struct mach_header *header) {
     return 0;
 }
 
-static void register_for_changes(void) {
+static void register_for_changes(void)
+{
     // Register for binary images being loaded and unloaded. dyld calls the add function once
     // for each library that has already been loaded and then keeps this cache up-to-date
     // with future changes
@@ -150,7 +153,8 @@ static void register_for_changes(void) {
     _dyld_register_func_for_remove_image(&remove_image);
 }
 
-static void add_image(const struct mach_header *header, intptr_t slide) {
+static void add_image(const struct mach_header *header, intptr_t slide)
+{
     KSBinaryImage *newImage = calloc(1, sizeof(KSBinaryImage));
     if (newImage == NULL) {
         return;
@@ -169,7 +173,8 @@ static void add_image(const struct mach_header *header, intptr_t slide) {
     }
 }
 
-static void remove_image(const struct mach_header *header, intptr_t slide) {
+static void remove_image(const struct mach_header *header, intptr_t slide)
+{
     KSBinaryImage existingImage = { 0 };
     if (!ksdl_getBinaryImageForHeader(header, slide, &existingImage)) {
         return;
@@ -186,19 +191,18 @@ static void remove_image(const struct mach_header *header, intptr_t slide) {
 
 #pragma mark - API -
 
-static const char * get_path(const struct mach_header *header) {
-    Dl_info DlInfo = {0};
+static const char *get_path(const struct mach_header *header)
+{
+    Dl_info DlInfo = { 0 };
     dladdr(header, &DlInfo);
     if (DlInfo.dli_fname) {
         return DlInfo.dli_fname;
     }
-    if (g_all_image_infos &&
-        header == g_all_image_infos->dyldImageLoadAddress) {
+    if (g_all_image_infos && header == g_all_image_infos->dyldImageLoadAddress) {
         return g_all_image_infos->dyldPath;
     }
 #if TARGET_OS_SIMULATOR
-    if (g_all_image_infos &&
-        g_all_image_infos->infoArray &&
+    if (g_all_image_infos && g_all_image_infos->infoArray &&
         header == g_all_image_infos->infoArray[0].imageLoadAddress) {
         return g_all_image_infos->infoArray[0].imageFilePath;
     }
@@ -206,10 +210,10 @@ static const char * get_path(const struct mach_header *header) {
     return NULL;
 }
 
-uintptr_t ksdl_first_cmd_after_header(const struct mach_header * header)
+uintptr_t ksdl_first_cmd_after_header(const struct mach_header *header)
 {
     if (header == NULL) {
-      return 0;
+        return 0;
     }
 
     switch (header->magic) {
@@ -225,18 +229,16 @@ uintptr_t ksdl_first_cmd_after_header(const struct mach_header * header)
     }
 }
 
-KSBinaryImage *ksdl_get_images(void) {
-    return atomic_load(&g_head_dummy.next);
-}
+KSBinaryImage *ksdl_get_images(void) { return atomic_load(&g_head_dummy.next); }
 
 KSBinaryImage *ksdl_imageNamed(const char *const imageName, bool exactMatch)
 {
     if (imageName != NULL) {
         for (KSBinaryImage *img = ksdl_get_images(); img != NULL; img = atomic_load(&img->next)) {
             if (img->name == NULL) {
-                continue; // name is null if the index is out of range per dyld(3)
+                continue;  // name is null if the index is out of range per dyld(3)
             } else if (img->unloaded == true) {
-                continue; // ignore unloaded libraries
+                continue;  // ignore unloaded libraries
             } else if (exactMatch) {
                 if (strcmp(img->name, imageName) == 0) {
                     return img;
@@ -275,7 +277,8 @@ const uint8_t *ksdl_imageUUID(const char *const imageName, bool exactMatch)
     return NULL;
 }
 
-KSBinaryImage *ksdl_get_main_image(void) {
+KSBinaryImage *ksdl_get_main_image(void)
+{
     for (KSBinaryImage *img = ksdl_get_images(); img != NULL; img = atomic_load(&img->next)) {
         if (img->header->filetype == MH_EXECUTE) {
             return img;
@@ -284,11 +287,10 @@ KSBinaryImage *ksdl_get_main_image(void) {
     return NULL;
 }
 
-KSBinaryImage *ksdl_get_self_image(void) {
-    return g_self_image;
-}
+KSBinaryImage *ksdl_get_self_image(void) { return g_self_image; }
 
-static bool contains_address(KSBinaryImage *img, vm_address_t address) {
+static bool contains_address(KSBinaryImage *img, vm_address_t address)
+{
     if (img->unloaded) {
         return false;
     }
@@ -296,7 +298,8 @@ static bool contains_address(KSBinaryImage *img, vm_address_t address) {
     return address >= imageStart && address < (imageStart + img->size);
 }
 
-KSBinaryImage *ksdl_image_at_address(const uintptr_t address){
+KSBinaryImage *ksdl_image_at_address(const uintptr_t address)
+{
     for (KSBinaryImage *img = ksdl_get_images(); img; img = atomic_load(&img->next)) {
         if (contains_address(img, address)) {
             return img;
@@ -447,7 +450,8 @@ bool ksdl_getBinaryImageForHeader(const struct mach_header *header, intptr_t sli
     return true;
 }
 
-void ksdl_test_support_mach_headers_reset(void) {
+void ksdl_test_support_mach_headers_reset(void)
+{
     // Erase all current images
     KSBinaryImage *next = NULL;
     for (KSBinaryImage *img = ksdl_get_images(); img != NULL; img = next) {
@@ -464,10 +468,12 @@ void ksdl_test_support_mach_headers_reset(void) {
     atomic_store(&is_image_list_initialized, false);
 }
 
-void ksdl_test_support_mach_headers_add_image(const struct mach_header *header, intptr_t slide) {
+void ksdl_test_support_mach_headers_add_image(const struct mach_header *header, intptr_t slide)
+{
     add_image(header, slide);
 }
 
-void ksdl_test_support_mach_headers_remove_image(const struct mach_header *header, intptr_t slide) {
+void ksdl_test_support_mach_headers_remove_image(const struct mach_header *header, intptr_t slide)
+{
     remove_image(header, slide);
 }

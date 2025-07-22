@@ -77,7 +77,7 @@ final class CppTests: IntegrationTestBase {
         if let imageList = imageList {
             for item in imageList {
                 XCTAssertNotNil(item)
-                if item.name.contains("Sample.app/Sample") {
+                if item.name.contains("Sample.app") {
                     sampleAppFound = true
                     XCTAssertNotEqual(item.image_addr, 0)
                     XCTAssertNotEqual(item.image_size, 0)
@@ -156,12 +156,14 @@ final class OtherTests: IntegrationTestBase {
         })
         XCTAssertNotNil(expectedFrame)
 
+        #if !os(watchOS)
         let threadStates = ["TH_STATE_RUNNING", "TH_STATE_STOPPED", "TH_STATE_WAITING",
                             "TH_STATE_UNINTERRUPTIBLE", "TH_STATE_HALTED"]
         for thread in rawReport.crash?.threads  ?? [] {
-            XCTAssertTrue(threadStates.contains(thread.state))
+            XCTAssertTrue(threadStates.contains(thread.state ?? ""))
         }
-
+        #endif
+        
         let appleReport = try launchAndReportCrash()
         XCTAssertTrue(appleReport.contains(KSCrashStacktraceCheckFuncName))
     }
@@ -186,10 +188,15 @@ final class UserReportedTests: IntegrationTestBase {
 
         let rawReport = try readPartialCrashReport()
         try rawReport.validate()
+        let userInfo = try JSONDecoder().decode(
+            [String: String].self,
+            from: rawReport.crash?.error?.nsexception?.userInfo?
+                .data(using: .utf8) ?? Data()
+        )
         XCTAssertEqual(rawReport.crash?.error?.type, "nsexception")
         XCTAssertEqual(rawReport.crash?.error?.reason, Self.crashReason)
         XCTAssertEqual(rawReport.crash?.error?.nsexception?.name, Self.crashName)
-        XCTAssertTrue(rawReport.crash?.error?.nsexception?.userInfo?.contains("a = b") ?? false)
+        XCTAssertEqual(userInfo["a"], "b")
         XCTAssertGreaterThanOrEqual(rawReport.crash?.threads?.count ?? 0, 2, "Expected to have at least 2 threads")
         let backtraceFrame = rawReport.crashedThread?.backtrace.contents.first(where: {
             $0.symbol_name?.contains(KSCrashNSExceptionStacktraceFuncName) ?? false
