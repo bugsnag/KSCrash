@@ -158,13 +158,15 @@ final class OtherTests: IntegrationTestBase {
         XCTAssertNotNil(expectedFrame)
 
         #if !os(watchOS)
-        let threadStates = ["TH_STATE_RUNNING", "TH_STATE_STOPPED", "TH_STATE_WAITING",
-                            "TH_STATE_UNINTERRUPTIBLE", "TH_STATE_HALTED"]
-        for thread in rawReport.crash?.threads  ?? [] {
-            XCTAssertTrue(threadStates.contains(thread.state ?? ""))
-        }
+            let threadStates = [
+                "TH_STATE_RUNNING", "TH_STATE_STOPPED", "TH_STATE_WAITING",
+                "TH_STATE_UNINTERRUPTIBLE", "TH_STATE_HALTED",
+            ]
+            for thread in rawReport.crash?.threads ?? [] {
+                XCTAssertTrue(threadStates.contains(thread.state ?? ""))
+            }
         #endif
-        
+
         let appleReport = try launchAndReportCrash()
         XCTAssertTrue(appleReport.contains(KSCrashStacktraceCheckFuncName))
     }
