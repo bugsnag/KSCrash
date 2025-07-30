@@ -1189,9 +1189,10 @@ static void writeBinaryImages(const KSCrashReportWriter *const writer, const cha
     writer->beginArray(writer, key);
     {
         for (KSBinaryImage *img = ksdl_get_images(); img != NULL; img = atomic_load(&img->next)) {
-            if (img->inCrashReport) {
+            // TODO: Restore once we add a configuration option to omit the images that were not used during symbolication
+//            if (img->inCrashReport) {
                 writeBinaryImage(writer, NULL, img);
-            }
+//            }
         }
     }
     writer->endContainer(writer);
