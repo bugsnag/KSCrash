@@ -219,6 +219,7 @@ static void onNSExceptionHandlingEnabled(NSUncaughtExceptionHandler *uncaughtExc
     COPY_STRING(bundleShortVersion);
     COPY_STRING(appID);
     COPY_STRING(cpuArchitecture);
+    COPY_STRING(clangVersion);
     COPY_PRIMITIVE(cpuType);
     COPY_PRIMITIVE(cpuSubType);
     COPY_PRIMITIVE(binaryCPUType);

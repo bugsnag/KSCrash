@@ -63,6 +63,7 @@ typedef struct {
     const char *bundleShortVersion;
     const char *appID;
     const char *cpuArchitecture;
+    const char *clangVersion;
     int cpuType;
     int cpuSubType;
     int binaryCPUType;
@@ -502,6 +503,10 @@ static void initialize(void)
         g_systemData.deviceAppHash = getDeviceAndAppHash();
         g_systemData.buildType = getBuildType();
         g_systemData.memorySize = kssysctl_uint64ForName("hw.memsize");
+
+#ifdef __clang_version__
+        g_systemData.clangVersion = __clang_version__;
+#endif
     }
 }
 
@@ -539,6 +544,7 @@ static void addContextualInfoToEvent(KSCrash_MonitorContext *eventContext)
         COPY_REFERENCE(bundleShortVersion);
         COPY_REFERENCE(appID);
         COPY_REFERENCE(cpuArchitecture);
+        COPY_REFERENCE(clangVersion);
         COPY_REFERENCE(cpuType);
         COPY_REFERENCE(cpuSubType);
         COPY_REFERENCE(binaryCPUType);

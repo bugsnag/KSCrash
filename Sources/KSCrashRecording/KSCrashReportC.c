@@ -1538,6 +1538,7 @@ static void writeSystemInfo(const KSCrashReportWriter *const writer, const char 
         writer->addStringElement(writer, KSCrashField_AppUUID, monitorContext->System.appID);
         writer->addStringElement(writer, KSCrashField_CPUArch, monitorContext->System.cpuArchitecture);
         writer->addIntegerElement(writer, KSCrashField_CPUType, monitorContext->System.cpuType);
+        writer->addStringElement(writer, KSCrashField_ClangVersion, monitorContext->System.clangVersion);
         writer->addIntegerElement(writer, KSCrashField_CPUSubType, monitorContext->System.cpuSubType);
         writer->addIntegerElement(writer, KSCrashField_BinaryCPUType, monitorContext->System.binaryCPUType);
         writer->addIntegerElement(writer, KSCrashField_BinaryCPUSubType, monitorContext->System.binaryCPUSubType);
